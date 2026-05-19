@@ -1,8 +1,26 @@
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useEffect, useState } from "react";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
+
+function RootLayoutNav() {
+  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+  useEffect(() => {
+    const isAuthGroup = segments[0] === "(auth)";
+    if (!isLoggedIn && !isAuthGroup) {
+      router.replace("/(auth)/sign-in");
+    } else if (isLoggedIn && isAuthGroup) {
+      router.replace("/(tabs)");
+    }
+  }, [isLoggedIn, segments])
+  return <Stack screenOptions={{ headerShown: false }} />
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -12,15 +30,26 @@ export default function RootLayout() {
     'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
     'sans-extrabold': require('../assets/fonts/PlusJakartaSans-ExtraBold.ttf'),
     'sans-light': require('../assets/fonts/PlusJakartaSans-Light.ttf')
-  })
-  useFonts(() => {
-    if(fontsLoaded) {
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  // Check Token 
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await SecureStore.getItemAsync("accessToken");
+      setIsLoggedIn(!!token);
+    };
+    checkToken();
+  }, []);
+  useEffect(() => {
+    if (fontsLoaded && isLoggedIn !== null) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded]) 
-  
-  if(!fontsLoaded) return null;
-
-  return <Stack screenOptions={{headerShown: false}} />;
+  }, [fontsLoaded, isLoggedIn])
+  if (!fontsLoaded || isLoggedIn === null) return null;
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
 }
-

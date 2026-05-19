@@ -379,3 +379,4 @@
 /Users/hung/Documents/learnrn/rnserver/rnapi/obj/Debug/net8.0/rnapi.pdb
 /Users/hung/Documents/learnrn/rnserver/rnapi/obj/Debug/net8.0/rnapi.genruntimeconfig.cache
 /Users/hung/Documents/learnrn/rnserver/rnapi/obj/Debug/net8.0/ref/rnapi.dll
+/Users/hung/Documents/learnrn/rnserver/rnapi/obj/Debug/net8.0/rnapi.sourcelink.json

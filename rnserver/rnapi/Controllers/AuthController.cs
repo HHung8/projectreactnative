@@ -77,5 +77,21 @@ public class AuthController : ControllerBase
             name = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value,
         });
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        if (dto.NewPassword != dto.ConfirmPassword)
+            return BadRequest(new { message = "Mật khẩu không khớp." });
+        try
+        {
+            await _authService.ForgotPasswordAsync(dto.Email, dto.NewPassword);
+            return Ok(new { message = "Đổi mật khẩu thành công." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
     
 }

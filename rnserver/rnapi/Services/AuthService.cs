@@ -94,7 +94,13 @@ public class AuthService : IAuthService
             Email = user.Email,
         };
     }
-    
+
+    public async Task ForgotPasswordAsync(string email, string newPassword)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email) ?? throw new Exception("Email không tồn tại");
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _db.SaveChangesAsync();
+    }
     
 }
 
