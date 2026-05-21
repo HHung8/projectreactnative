@@ -1,8 +1,8 @@
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { AuthProvider, useAuth } from "../context/AuthContext";
 import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -11,15 +11,21 @@ function RootLayoutNav() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
   const segments = useSegments();
+
   useEffect(() => {
-    const isAuthGroup = segments[0] === "(auth)";
-    if (!isLoggedIn && !isAuthGroup) {
+    // ✅ Chờ segments có giá trị thật mới xử lý
+    if (!segments[0]) return;
+    const inAuthGroup = segments[0] === "(auth)";
+    const inTabsGroup = segments[0] === "(tabs)";
+    if (!isLoggedIn && !inAuthGroup) {
       router.replace("/(auth)/sign-in");
-    } else if (isLoggedIn && isAuthGroup) {
+    } else if (isLoggedIn && inAuthGroup) {
       router.replace("/(tabs)");
     }
-  }, [isLoggedIn, segments])
-  return <Stack screenOptions={{ headerShown: false }} />
+    // ✅ Nếu đã ở đúng chỗ thì không làm gì
+  }, [isLoggedIn, segments]);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
 
 export default function RootLayout() {
@@ -29,26 +35,29 @@ export default function RootLayout() {
     'sans-semibold': require('../assets/fonts/PlusJakartaSans-SemiBold.ttf'),
     'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
     'sans-extrabold': require('../assets/fonts/PlusJakartaSans-ExtraBold.ttf'),
-    'sans-light': require('../assets/fonts/PlusJakartaSans-Light.ttf')
+    'sans-light': require('../assets/fonts/PlusJakartaSans-Light.ttf'),
   });
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  // Check Token 
+  const [initialLoggedIn, setInitialLoggedIn] = useState<boolean | null>(null);
+
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync("accessToken");
-      setIsLoggedIn(!!token);
+      setInitialLoggedIn(!!token);
     };
     checkToken();
   }, []);
+
   useEffect(() => {
-    if (fontsLoaded && isLoggedIn !== null) {
+    if (fontsLoaded && initialLoggedIn !== null) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, isLoggedIn])
-  if (!fontsLoaded || isLoggedIn === null) return null;
+  }, [fontsLoaded, initialLoggedIn]);
+
+  if (!fontsLoaded || initialLoggedIn === null) return null;
+
   return (
-    <AuthProvider>
+    <AuthProvider initialLoggedIn={initialLoggedIn}>
       <RootLayoutNav />
     </AuthProvider>
   );

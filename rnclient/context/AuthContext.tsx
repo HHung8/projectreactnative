@@ -10,8 +10,8 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-export const AuthProvider = ({children} : {children: React.ReactNode}) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+export const AuthProvider = ({children, initialLoggedIn} : {children: React.ReactNode; initialLoggedIn: boolean}) => {
+    const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn);
     
     const login = async (data: { accessToken: string; refreshToken: string; fullName: string; email: string }) => {
         await SecureStore.setItemAsync("accessToken", data.accessToken);

@@ -8,4 +8,5 @@ public class User
     public string PasswordHash { get; set; }  = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public List<RefreshToken> RefreshTokens { get; set; } = new();
+    public List<Subscription> Subscriptions { get; set; } = new();
 }

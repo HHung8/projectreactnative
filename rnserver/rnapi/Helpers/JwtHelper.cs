@@ -24,7 +24,7 @@ public class JwtHelper
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15), // Access token hết hạn sau 15 phút
+            expires: DateTime.UtcNow.AddMinutes(24), // Access token hết hạn sau 15 phút
             signingCredentials: creds
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

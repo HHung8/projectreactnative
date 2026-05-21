@@ -12,9 +12,8 @@ const UpcomingSubcriptionCard = ({ name, price, currency, daysLeft, icon }: Upco
           <Text className="upcoming-meta" numberOfLines={1}>
             {daysLeft > 1 ? `${daysLeft} days left` : 'Last day'}
           </Text>
-        </View>
+        </View> 
       </View>
-
       <Text className='upcoming-name' numberOfLines={1}>{name}</Text>
     </View>
   )
