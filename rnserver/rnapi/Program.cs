@@ -21,10 +21,10 @@ if (!string.IsNullOrEmpty(databaseUrl))
 {
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
-    var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]}";
+    var dbPort = uri.Port > 0 ? uri.Port : 5432;
+    var connectionString = $"Host={uri.Host};Port={dbPort};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]}";
     builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 }
-
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddScoped<JwtHelper>();
